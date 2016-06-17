@@ -13,10 +13,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
+    var hostReach: Reachability!
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        //开启网络状态的监听
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(reachChange), name: kReachabilityChangedNotification, object: nil)
+        
+        //初始化
+        hostReach = Reachability(hostName: "www.google.com")
+        //开启监听，会启动一个runloop
+        hostReach.startNotifier()
+        
         return true
+    }
+    
+    //连接改变
+    func reachChange(noti: NSNotification) {
+    
+        let curReach = noti.object as! Reachability
+    
+        //获取当前网络状态
+        let status = curReach.currentReachabilityStatus()
+        
+        switch status.rawValue {
+        case 0:
+            print("没有网络连接")
+        case 1:
+            print("wifi连接")
+        case 2:
+            print("蜂窝连接")
+        default:
+            break
+        }
+    
     }
 
     func applicationWillResignActive(application: UIApplication) {
